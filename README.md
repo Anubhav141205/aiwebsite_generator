@@ -30,7 +30,18 @@ Users describe their requirements (e.g., *“Create a portfolio website for a ph
 ---
 
 ## 🏗️ System Architecture
-
+Frontend (HTML + JS)
+|
+| POST /generate
+v
+Backend (FastAPI)
+|
+| Prompt
+v
+Local LLM (LLaMA 2 via Ollama)
+|
+v
+Generated HTML
 ---
 
 ## 🧰 Tech Stack
