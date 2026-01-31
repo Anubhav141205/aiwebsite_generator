@@ -86,6 +86,23 @@ function downloadHTML() {
   link.download = "index.html";
   link.click();
 }
+const API_URL =
+  window.location.hostname === "localhost"
+    ? "http://127.0.0.1:8000/generate"
+    : "https://aiwebsite-generator-backend.onrender.com/generate";
+
+async function generateWebsite() {
+  const prompt = document.getElementById("prompt").value;
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt })
+  });
+
+  const data = await response.json();
+  document.getElementById("preview").srcdoc = data.html;
+}
+
 </script>
 
 <footer style="margin-top:40px; text-align:center; color:#666;">
