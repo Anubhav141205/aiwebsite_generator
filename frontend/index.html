@@ -54,6 +54,10 @@
 </body>
  <script>
 let latestHTML = "";
+const API_URL =
+  window.location.hostname === "localhost"
+    ? "http://127.0.0.1:8000/generate"
+    : "https://aiwebsite-generator-backend.onrender.com/generate";
 
 async function generateWebsite() {
   const prompt = document.getElementById("prompt").value;
@@ -64,43 +68,30 @@ async function generateWebsite() {
   btn.disabled = true;
   status.innerText = "Generating… ⏳";
 
-  const response = await fetch("http://127.0.0.1:8000/generate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt })
-  });
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt })
+    });
 
-  const data = await response.json();   // ✅ THIS WAS MISSING
+    const data = await response.json();
+    iframe.srcdoc = data.html;
+    status.innerText = "Done ✅";
 
-  latestHTML = data.html;
-  iframe.srcdoc = data.html;
+  } catch (err) {
+    console.error(err);
+    status.innerText = "Backend unavailable ❌";
+  }
 
-  status.innerText = "Done ✅";
   btn.disabled = false;
 }
-
 function downloadHTML() {
   const blob = new Blob([latestHTML], { type: "text/html" }); // ✅ FIXED
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = "index.html";
   link.click();
-}
-const API_URL =
-  window.location.hostname === "localhost"
-    ? "http://127.0.0.1:8000/generate"
-    : "https://aiwebsite-generator-backend.onrender.com/generate";
-
-async function generateWebsite() {
-  const prompt = document.getElementById("prompt").value;
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt })
-  });
-
-  const data = await response.json();
-  document.getElementById("preview").srcdoc = data.html;
 }
 
 </script>

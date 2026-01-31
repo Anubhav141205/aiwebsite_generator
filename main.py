@@ -2,12 +2,16 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import requests
+import os
+DEMO_MODE = os.getenv("DEMO_MODE", "false").lower() == "true"
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "https://aiwebsite-generator1.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],   # IMPORTANT
     allow_headers=["*"],
@@ -18,6 +22,21 @@ class PromptRequest(BaseModel):
 
 @app.post("/generate")
 async def generate_website(data: PromptRequest):
+    if DEMO_MODE:
+        return {
+            "html": """<!DOCTYPE html>
+<html>
+<head><title>Demo Mode</title></head>
+<body>
+<h1>Demo Mode</h1>
+<p>The full AI generation runs locally using LLaMA-2 via Ollama.</p>
+<p>This cloud deployment demonstrates API and frontend integration.</p>
+</body>
+</html>"""
+        }
+
+    # existing LLaMA-2 logic below
+
     system_prompt = f"""
 You are a professional frontend web developer.
 
